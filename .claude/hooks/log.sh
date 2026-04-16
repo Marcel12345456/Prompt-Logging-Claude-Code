@@ -76,15 +76,14 @@ hook_prompt() {
   {
     printf '\n### %s\n\n' "$timestamp"
     printf '**Prompt:** %s\n' "$prompt"
-    printf '\n**Project:** %s\n\n' "$cwd"
+    printf '\n**Project:** %s\n' "$cwd"
   } >> "$log_file"
 }
 
 # ── TOOL ─────────────────────────────────────────────────────────────
 hook_tool() {
-  local session_id tool_name file_path
+  local session_id file_path
   session_id=$(extract_json "session_id" "$INPUT")
-  tool_name=$(extract_json "tool_name" "$INPUT")
   file_path=$(extract_json "file_path" "$INPUT")
 
   [ -z "$session_id" ] && return 0
@@ -96,7 +95,6 @@ hook_tool() {
   local cwd
   cwd=$(sed -n '2p' "$meta_file")
   [ -z "$cwd" ] && return 0
-  cd "$cwd" || return 0
 
   # Relative path
   local rel_path
@@ -107,44 +105,7 @@ hook_tool() {
   fi
 
   local changes_file="/tmp/claude-${session_id}-changes.txt"
-
-  if [ "$tool_name" = "Write" ]; then
-    local total_lines
-    total_lines=$(wc -l < "$file_path" 2>/dev/null | tr -d ' ')
-    printf 'FILE:%s:L1-%s\n' "$rel_path" "$total_lines" >> "$changes_file"
-    return 0
-  fi
-
-  # Edit tool: use git diff for precise line ranges
-  local diff_raw
-  diff_raw=$(git diff --unified=0 -- "$file_path" 2>/dev/null)
-
-  if [ -z "$diff_raw" ]; then
-    local total_lines
-    total_lines=$(wc -l < "$file_path" 2>/dev/null | tr -d ' ')
-    printf 'FILE:%s:L1-%s\n' "$rel_path" "$total_lines" >> "$changes_file"
-    return 0
-  fi
-
-  local line_ranges
-  line_ranges=$(
-    printf '%s\n' "$diff_raw" \
-      | grep "^@@" \
-      | sed 's/.*+\([0-9][0-9,]*\).*/\1/' \
-      | awk -F',' 'BEGIN { first=1 } {
-          start = $1 + 0
-          count = (NF > 1) ? $2 + 0 : 1
-          if (count == 0) next
-          end = start + count - 1
-          if (!first) printf ","
-          first = 0
-          if (start == end) printf "L%d", start
-          else printf "L%d-%d", start, end
-        } END { print "" }' \
-      | tr -d '\n'
-  )
-
-  printf 'FILE:%s:%s\n' "$rel_path" "$line_ranges" >> "$changes_file"
+  printf '%s\n' "$rel_path" >> "$changes_file"
 }
 
 # ── STOP ─────────────────────────────────────────────────────────────
@@ -163,15 +124,9 @@ hook_stop() {
 
   if [ -f "$changes_file" ] && [ -s "$changes_file" ]; then
     printf '**Files:**\n' >> "$log_file"
-    awk '/^FILE:/ {
-      sub(/^FILE:/, "")
-      colon = index($0, ":")
-      if (colon > 0) {
-        file_name = substr($0, 1, colon - 1)
-        line_ref  = substr($0, colon + 1)
-        printf "- `%s` (%s)\n", file_name, line_ref
-      }
-    }' "$changes_file" >> "$log_file"
+    sort -u "$changes_file" | while IFS= read -r f; do
+      printf -- '- `%s`\n' "$f" >> "$log_file"
+    done
   fi
 
   printf '\n---\n' >> "$log_file"
