@@ -17,4 +17,4 @@ Write nothing else — no date, no file list, no numbering. The hook handles the
 
 ## General
 
-- Respond in English.
+- Always respond in English, regardless of the prompt language.
