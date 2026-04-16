@@ -1,20 +1,20 @@
-# Projekt-Regeln für Claude Code
+# Project Rules for Claude Code
 
-## Prompt-Logging
+## Prompt Logging
 
-Logging wird automatisch durch Hooks übernommen. Der Hook schreibt bei jedem Prompt:
-- Timestamp, Prompt-Text, Projektpfad
-- Geänderte Dateien mit Zeilenbereichen
-- Diff-Snippet (max 30 Zeilen)
+Logging is handled automatically by hooks. The hook writes on each prompt:
+- Timestamp, prompt text, project path
+- Changed files with line ranges
+- Diff snippet (max 30 lines)
 
-**Deine einzige Aufgabe:** Hänge nach abgeschlossenen Code-Änderungen genau eine Zeile an den offenen Eintrag in der heutigen Log-Datei an:
+**Your only task:** After completing code changes, append exactly one line to the open entry in today's log file:
 
 ```
-**Summary:** [Ein Satz, der beschreibt was getan wurde]
+**Summary:** [One sentence describing what was done]
 ```
 
-Nichts sonst schreiben — kein Datum, keine Dateiliste, keine Nummerierung. Der Hook erledigt den Rest.
+Write nothing else — no date, no file list, no numbering. The hook handles the rest.
 
-## Allgemein
+## General
 
-- Antworte auf Deutsch.
+- Respond in English.
