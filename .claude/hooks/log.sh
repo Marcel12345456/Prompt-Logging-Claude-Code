@@ -123,7 +123,7 @@ hook_stop() {
   [ -z "$log_file" ] && return 0
 
   if [ -f "$changes_file" ] && [ -s "$changes_file" ]; then
-    printf '**Files:**\n' >> "$log_file"
+    printf '\n**Files:**\n' >> "$log_file"
     sort -u "$changes_file" | while IFS= read -r f; do
       printf -- '- `%s`\n' "$f" >> "$log_file"
     done
