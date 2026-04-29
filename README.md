@@ -1,6 +1,6 @@
 # Claude Code Prompt Logger
 
-Automatic logging of all Claude Code interactions per project. Each prompt, the files changed, and the affected line ranges are recorded in a daily Markdown log.
+Automatic logging of all Claude Code interactions per project. Each prompt and the files changed are recorded in a daily Markdown log.
 
 ## What gets logged
 
@@ -9,7 +9,7 @@ Automatic logging of all Claude Code interactions per project. Each prompt, the 
 | Timestamp | `### 14:32:07` |
 | Prompt text | `**Prompt:** Fix the login bug` |
 | Project path | `**Project:** /Users/you/myapp` |
-| Changed files | `- \`src/auth.ts\` (L12-18,L45)` |
+| Changed files | `- \`src/auth.ts\`` |
 
 Logs are written to `.ai-logs/` in the project root. Each conversation session gets its own file:
 
@@ -58,16 +58,18 @@ The logger uses three Claude Code hook events, all handled by a single script:
 | Hook | Trigger | What it does |
 |------|---------|-------------|
 | `UserPromptSubmit` | User sends a prompt | Creates log entry with timestamp and prompt text |
-| `PostToolUse` | Claude edits/writes a file | Records the file path and changed line ranges |
+| `PostToolUse` | Claude edits/writes a file | Records the file path |
 | `Stop` | Claude finishes responding | Flushes file changes into the log entry and closes it |
 
 All three are required. Removing one will break the logging flow.
 
 ## Customization
 
-### Change the log directory
+### Change the log directory - not recommended in shared projects
 
-In [hooks/log.sh](hooks/log.sh), find `log_dir="$cwd/.ai-logs"` and change `.ai-logs` to your preferred directory name.
+In [.claude/hooks/log.sh](.claude/hooks/log.sh), find `log_dir="$cwd/.ai-logs"` and change `.ai-logs` to your preferred directory name.
+
+> **Shared projects:** keep `.ai-logs/` as-is. When multiple people work in the same checkout, every teammate's hook must write to the same folder so logs land in one place and `.gitignore` keeps them all out of version control. Renaming the folder for one person breaks that contract.
 
 ---
 
