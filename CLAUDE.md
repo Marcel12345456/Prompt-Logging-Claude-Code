@@ -4,8 +4,7 @@
 
 Logging is handled automatically by hooks. The hook writes on each prompt:
 - Timestamp, prompt text, project path
-- Changed files with line ranges
-- Diff snippet (max 30 lines)
+- Changed files (paths only)
 
 **Your only task:** After completing code changes, append exactly one line to the open entry in today's log file:
 
