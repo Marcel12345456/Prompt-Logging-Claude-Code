@@ -1,0 +1,23 @@
+CLAUDE.md
+  40558370b932b4f3 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "a5b980f5834e4942a4ac2b30d91dd52899bd9b19",
+  "prompts": {
+    "40558370b932b4f3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c2c8d0ab-55b8-44fa-8ef4-85456447c53f",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Marcel12345456",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 2,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    }
+  }
+}
